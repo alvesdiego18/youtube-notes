@@ -7,6 +7,7 @@ const interval = setInterval(() => {
 
     if (center && _button) {
         clearInterval(interval)
+        initDataMark()
 
         let heightVezes = 1
 
@@ -15,107 +16,85 @@ const interval = setInterval(() => {
         _button.addEventListener(`click`, () => {
 
             const _container = document.querySelector(".ytp-scrubber-container")
+            const _videoHtml = document.querySelector('.html5-video-player')
             if (_container) {
 
+                //** Pause video */
                 _play.click()
+
+                //** Get position X de video timer */
                 const _containerX = _container.getBoundingClientRect().x
+                const _videohtmlX = _videoHtml.offsetWidth
+                const calcWidth = _containerX / _videohtmlX * 100
 
-                var divBackground = document.createElement('div')
+                //** Create a div background popup */
+                const divBackground = document.createElement('div')
                 divBackground.id = `div_background_marcacao`;
-                divBackground.style = `
-                    background-color: rgba(0,0,0,0.6); 
-                    width: 100%; 
-                    height: 100%; 
-                    display: flex; 
-                    justify-content:center; 
-                    align-items:center;
-                    position: absolute;
-                    top: 0;
-                    left: 0;    
-                    z-index: 99999999;
-                `
+                divBackground.classList.add('mark_background')
 
-                var divInput = document.createElement('div')
-                divInput.style = `
-                    width: 300px; 
-                    background-color: #FFF;                    
-                    border-radius: 4px;
-                    padding: 2px;
-                    display: flex;
-                    flex-direction: column;
-                `
+                //** Create a div input */
+                const divInput = document.createElement('div')
+                divInput.classList.add('mark_div_input')
 
+                //** Create a text area for add content */
                 var textarea = document.createElement('textarea')
                 textarea.id = `text_marcacao`;
-                textarea.rows = 5
+                textarea.rows = 3
                 textarea.placeholder = 'E essa marcação?'
-                textarea.textLength = 100
-                textarea.style = `
-                    border: 0px;
-                    padding: 10px;
-                    border-radius: 4px;
-                    outline: none;
-                    width: 280px;
-                `
+                textarea.maxLength = 100
+                textarea.classList.add('mark_text_area')
 
-                var buttonAdd = document.createElement(`button`)
-                buttonAdd.style = `
-                    background-color: #c00;
-                    color: #FFF;
-                    width: 300px;
-                    height: 50px;
-                    border: 0px;
-                    border-radius: 4px;
-                    outline: none;
-                    cursor: pointer;
-                `
+                //** Create a button to insert itens */
+                const buttonAdd = document.createElement(`button`)
+                buttonAdd.classList.add('mark_button_add')
                 buttonAdd.textContent = `ADICIONAR NOTA`;
-                buttonAdd.addEventListener(`click`, () => {                    
+                buttonAdd.addEventListener(`click`, () => {
 
-                    var divMarcacao = document.createElement('div')
-                    divMarcacao.id = `marcacao1`;
-                    divMarcacao.style = `
-                        background-color: red;    
-                        height: 10px;
-                        position: absolute;
+                    const _description = `${_timevideo.textContent} - ${document.querySelector(`#text_marcacao`).value}`
+
+                    const divMarcacao = document.createElement('div')
+                    divMarcacao.id = `mark${_timevideo.textContent.replace(':', '_')}`;
+                    divMarcacao.classList.add('mark_marcacao')
+                    divMarcacao.style = `                      
                         bottom: ${30 + (20 * heightVezes)}px;
-                        left: ${_containerX}px;
-                        padding: 4px 7px;
-                        border-radius: 8px 8px 8px 0px;                        
+                        left: ${calcWidth}%;
                     `
-                    divMarcacao.textContent = `${_timevideo.textContent} - ${document.querySelector(`#text_marcacao`).value}`
+                    divMarcacao.textContent = _description
                     document.querySelector("#movie_player > div.ytp-chrome-bottom").appendChild(divMarcacao)
 
+                    //** remove option add itens for screen */
                     document.querySelector(`#div_background_marcacao`).remove()
+
+                    addDataMark({
+                        id: `mark${_timevideo.textContent.replace(':', '_')}`,
+                        description: _description,
+                        bottom: `${30 + (20 * heightVezes)}px`,
+                        left: `${calcWidth}%`,
+                        link: window.location.href.split("=")[1].split("&")[0]
+                    })
 
                     heightVezes++
                     _play.click()
                 })
 
+                const buttonClose = document.createElement(`button`)
+                buttonClose.textContent = 'FECHAR'
+                buttonClose.classList.add('mark_button_close')
+                buttonClose.addEventListener(`click`, () => {
+                    document.querySelector(`#div_background_marcacao`).remove()
+                })
+
+                //** add childrens */
                 divInput.appendChild(textarea)
                 divInput.appendChild(buttonAdd)
+                divInput.appendChild(buttonClose)
                 divBackground.appendChild(divInput)
-
                 document.body.appendChild(divBackground)
             }
             else {
-                alert('Nada foi encontrado')
+                console.log("Nada foi encontrado")
             }
         })
     }
 
 }, 1000)
-
-
-var divBackground = document.createElement('div')
-divBackground.style = `background-color: rgba(0,0,0,0.6); width: 100%; height: 100%; display: flex; justify-content:center; align-items:center;`
-
-var divInput = document.createElement('div')
-divInput.style = `width: 300px; background-color: #FFF;`
-
-var textarea = document.createElement('textarea')
-textarea.rows = 5
-textarea.placeholder = 'E essa marcação?'
-
-divInput.appendChild(textarea)
-divBackground.appendChild(divInput)
