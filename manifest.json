@@ -1,13 +1,17 @@
 {
-    "name": "Marcar video youtube",
-    "description": "Com este plugin vc pode marcar videos no youtube!",
-    "version": "1.0",
-    "manifest_version": 3,
-    "content_scripts": [
-        {
-            "matches": ["https://www.youtube.com/watch?v=*"],
-            "js": ["content.js", "background.js"],
-            "css": ["style.css"]
-        }
-    ]
+  "name": "Marcar video youtube",
+  "description": "Com este plugin vc pode marcar videos no youtube!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/watch?v=*"],
+      "js": ["content.js", "background.js"],
+      "css": ["style.css"]
+    }
+  ],
+  "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  }
 }
