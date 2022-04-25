@@ -48,7 +48,7 @@
     cursor: pointer;
 }
 
-.mark_marcacao {
+.mark_item {
     background-color: red;    
     height: 10px;
     position: absolute;
@@ -57,7 +57,25 @@
     cursor: pointer;
 }
 
-.mark_marcacao:hover {
+.mark_item:hover {
     background-color: #b50202;
     z-index: 9999999999;
+}
+
+.mark_button_create {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background: #181818;
+    border-width: 0px;
+    margin-right: 12px;
+
+    color: #FFF;
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.mark_button_create:hover {
+    opacity: 0.7;
 }
