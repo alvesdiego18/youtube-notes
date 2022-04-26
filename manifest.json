@@ -1,17 +1,19 @@
 {
-  "name": "Marcar video youtube",
-  "description": "Com este plugin vc pode marcar videos no youtube!",
+  "name": "YoutubeNotes",
+  "description": "Bookmark and take notes on Youtube timeline.",
   "version": "1.0",
   "manifest_version": 3,
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/watch?v=*"],
       "js": ["content.js", "background.js"],
-      "css": ["style.css"]
+      "css": ["style.scss"],
+      "run_at": "document_idle"
     }
   ],
   "permissions": ["storage", "activeTab", "scripting"],
   "action": {
     "default_popup": "popup.html"
-  }
+  },
+  "web_accessible_resources": ["mainPage.html"]
 }
