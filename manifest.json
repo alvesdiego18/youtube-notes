@@ -5,9 +5,25 @@
     "manifest_version": 3,
     "content_scripts": [
         {
-            "matches": ["https://www.youtube.com/watch?v=*"],
-            "js": ["content.js", "background.js"],
-            "css": ["style.css"]
+            "matches": [
+                "https://www.youtube.com/watch?v=*",
+                "https://youtube.com/watch?v=*"
+            ],
+            "js": [
+                "content.js",
+                "background.js"
+            ],
+            "css": [
+                "style.css"
+            ]
         }
-    ]
+    ],
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting"
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    }
 }
