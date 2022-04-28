@@ -79,3 +79,54 @@
 .mark_button_create:hover {
     opacity: 0.7;
 }
+
+/*---------------------------------------------------------------------------*/
+@import url(https://fonts.googleapis.com/css?family=Noto+Sans);
+
+/* $bg: #48b379 */
+/* $white: #eee9dc */
+/* $red: #f98262 */
+
+.timeline {
+    list-style-type: none;
+    margin: 120px 0 0;
+    padding: 0;
+    border-top: 8px solid #EEE9DC;
+    display: table;
+    border-spacing: 30px 0;
+
+    li {
+        display: table-cell;
+        .relative {
+            position: relative;
+        }
+    }
+    p {
+        margin: 0 0 15px;
+    }
+
+}
+
+.time {
+    text-align: center;
+    top: -55px;
+    left: 0;
+    right: 0;
+    font-size: 0.95em;
+    line-height: 20px;
+    position: absolute;
+}
+
+.circle {
+    margin: 0 auto;
+    top: -14px;
+    left: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: $bg;
+    border: 5px solid $white;
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+}
