@@ -9,8 +9,7 @@
         "https://www.youtube.com/watch?v=*"
       ],
       "js": [
-        "content.js",
-        "background.js"
+        "content.js"
       ],
       "css": [
         "style.scss"
@@ -25,8 +24,5 @@
   ],
   "action": {
     "default_popup": "popup.html"
-  },
-  "web_accessible_resources": [
-    "mainPage.html"
-  ]
+  }
 }
