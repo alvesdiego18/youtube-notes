@@ -1,163 +1,211 @@
 const interval = setInterval(() => {
 
-    const _center = document.querySelector("#center")
-    const buttonPlay = document.querySelector("#movie_player > div.ytp-chrome-bottom > div.ytp-chrome-controls > div.ytp-left-controls > button")
-    const timeVideo = document.querySelector(".ytp-time-current")
+    const isReady = document.querySelector("#buttons #button > yt-icon > svg")
+    const currentTimeVideo = document.querySelector(".ytp-time-current")
+    const player = document.querySelector("#movie_player > div.ytp-chrome-bottom")
 
-    function getOffsetRightPosition (el) {
-        const rect = el.getBoundingClientRect()
-        return {
-            right: rect.right + window.scrollX,
-            top: rect.top + window.scrollY,
-        }
-    }
-
-    if (_center) {
+    if (isReady) {
         clearInterval(interval)
-        initDataMark()
 
-        console.clear()
-        console.log('Inicializing....')
+        const BOTTOM_MARK_POSITION = `56px`
+        const BOTTOM_MARK_DISTANC = 22
 
-        const list = []
         let lastItemMarked = null
 
-        const _buttonsAll = document.querySelector("#buttons")
-        const _buttonCreate = document.createElement(`button`)
-        _buttonCreate.classList.add('mark_button_create')
-        _buttonCreate.textContent = `+`;
-        _buttonsAll.prepend(_buttonCreate)
+        const getOffsetPositions = (el) => {
 
-        let heightVezes = 1
+            const rect = el.getBoundingClientRect()
+            return {
+                right: rect.right + window.scrollX,
+                left: rect.left + window.scrollX,
+                top: rect.top + window.scrollY,
+                bottom: rect.bottom + window.scrollY,
+            }
+        }
 
-        _center.style.flex = 0.7
-        _buttonCreate.addEventListener(`click`, () => {
+        const createdButtonAddMark = () => {
 
-            const _container = document.querySelector(".ytp-scrubber-container")
-            const _videoHtml = document.querySelector('.html5-video-player')
-            if (_container) {
+            const buttonsAll = document.querySelector("#buttons")
+            const buttonCreate = document.createElement(`button`)
+            buttonCreate.classList.add('mark_button_create')
+            buttonCreate.textContent = `+`
+            buttonsAll.prepend(buttonCreate)
 
-                //** Pause video */
-                buttonPlay.click()
+            return buttonCreate
+        }
 
-                //** Get position X de video timer */
-                const containerX = _container.getBoundingClientRect().x
-                const videohtmlX = _videoHtml.offsetWidth
-                const calcWidth = containerX / videohtmlX * 100
+        const createPopupToAddMark = () => {
 
-                //** Create a div background popup */
-                const divBackground = document.createElement('div')
-                divBackground.id = `mark_background`;
-                divBackground.classList.add('mark_background')
+            //** Create a div background popup */
+            const divBackground = document.createElement('div')
+            divBackground.id = `mark_div_background`;
+            divBackground.classList.add('mark_background')
 
-                //** Create a div input */
-                const divInput = document.createElement('div')
-                divInput.classList.add('mark_div_input')
+            //** Create a div input */
+            const divInput = document.createElement('div')
+            divInput.classList.add('mark_div_input')
 
-                //** Create a text area for add content */
-                const textarea = document.createElement('textarea')
-                textarea.id = `mark_text`;
-                textarea.rows = 3
-                textarea.placeholder = 'This marker is...'
-                textarea.maxLength = 53
-                textarea.classList.add('mark_text_area')
+            //** Create a text area for add content */
+            const textarea = document.createElement('textarea')
+            textarea.id = `mark_text`;
+            textarea.rows = 3
+            textarea.placeholder = 'This marker is...'
+            textarea.maxLength = 53
+            textarea.classList.add('mark_text_area')
 
-                //** Create a button to insert itens */
-                const buttonAdd = document.createElement(`button`)
-                buttonAdd.classList.add('mark_button_add')
-                buttonAdd.textContent = `Add Marker`
-                buttonAdd.addEventListener(`click`, () => {
+            //** Create a button to insert itens */
+            const buttonAdd = document.createElement(`button`)
+            buttonAdd.id = 'mark_button_add'
+            buttonAdd.classList.add('mark_button_add')
+            buttonAdd.textContent = `Add Marker`
 
-                    const backgroundMarkId = `mark${timeVideo.textContent.replace(':', '_')}`
-                    const description = `${timeVideo.textContent} - ${document.querySelector(`#mark_text`).value}`
-                    const title = document.querySelector("#container > h1 > yt-formatted-string").textContent
-                    let spaceBottom = `52px`
+            //** Create a button to close popup marks */
+            const buttonClose = document.createElement(`button`)
+            buttonClose.id = 'mark_button_close'
+            buttonClose.textContent = 'Close'
+            buttonClose.classList.add('mark_button_close')
 
-                    //** get position to finish last div added */
-                    if (lastItemMarked) {
+            //** add childrens */
+            divInput.appendChild(textarea)
+            divInput.appendChild(buttonAdd)
+            divInput.appendChild(buttonClose)
+            divBackground.appendChild(divInput)
 
-                        const elLastItemMarked = document.querySelector(`#${lastItemMarked}`)
+            document.body.appendChild(divBackground)
+        }
 
-                        if (elLastItemMarked) {
-                            const lastPositionToItemMarker = getOffsetRightPosition(elLastItemMarked)
-                            const poistionPinToPlayer = getOffsetRightPosition(document.querySelector("#movie_player .ytp-scrubber-container"))
+        const closePopupToAddMark = () => {
 
-                            // calculated position from last pin added
-                            // and new pin if it is greater than the last position, reset
-                            if (poistionPinToPlayer.right >= lastPositionToItemMarker.right)
-                                heightVezes = 1
-
-                            const newBottomValue = Number(elLastItemMarked.style.bottom.replace('px', ''))
-                            spaceBottom = `${newBottomValue + 22}px`
-                        }
-                        else {
-                            spaceBottom = `52px`
-                        }
-                    }
-
-                    //** add item to screen */
-                    const player = document.querySelector("#movie_player > div.ytp-chrome-bottom")
-                    const backgroundMark = document.createElement('div')
-                    backgroundMark.id = backgroundMarkId;
-                    backgroundMark.classList.add('mark_item')
-                    backgroundMark.textContent = description
-                    backgroundMark.style = `                      
-                        bottom: ${spaceBottom};
-                        left: ${calcWidth}%;
-                    `
-                    backgroundMark.addEventListener('click', () => {
-                        player.removeChild(backgroundMark)
-
-                        const bottomLastItemRemoved = Number(backgroundMark.style.bottom.replace('px', ''))
-                        document.querySelectorAll('.mark_item').forEach(item => {
-                            console.log(item.style.bottom)
-
-                            const newBottomValue = Number(item.style.bottom.replace('px', ''))
-                            if (newBottomValue > bottomLastItemRemoved)
-                                item.style.bottom = `${newBottomValue - 22}px`
-                        })
-                    })
-
-                    player.appendChild(backgroundMark)
-
-                    //** save the last id marked */ 
-                    lastItemMarked = backgroundMarkId
-
-                    //** remove option add itens for screen */
-                    document.querySelector(`#mark_background`).remove()
-
-                    list.push({
-                        id: backgroundMarkId,
-                        description: description,
-                        bottom: spaceBottom,
-                        left: `${calcWidth}%`,
-                        link: window.location.href,
-                        title
-                    })
-
-                    heightVezes++
-                    buttonPlay.click()
+            document.querySelector('#mark_button_close')
+                .addEventListener(`click`, () => {
+                    document.querySelector(`#mark_div_background`).remove()
+                    verifyPlayPause('play')
                 })
+        }
 
-                const buttonClose = document.createElement(`button`)
-                buttonClose.textContent = 'Close'
-                buttonClose.classList.add('mark_button_close')
-                buttonClose.addEventListener(`click`, () => {
-                    document.querySelector(`#mark_background`).remove()
-                    buttonPlay.click()
-                })
+        const verifyPlayPause = (type) => {
 
-                //** add childrens */
-                divInput.appendChild(textarea)
-                divInput.appendChild(buttonAdd)
-                divInput.appendChild(buttonClose)
-                divBackground.appendChild(divInput)
-                document.body.appendChild(divBackground)
+            const buttonControlPlayPause = document.querySelector("#movie_player .ytp-left-controls > button")
+            const isPlaying = buttonControlPlayPause.title.indexOf('Pausa (k)') > -1
+
+            if (type === 'play' && !isPlaying)
+                buttonControlPlayPause.click()
+            else if (type === 'pause' && isPlaying)
+                buttonControlPlayPause.click()
+
+        }
+
+        const calcInitialPositionMarkVideo = () => {
+
+            const container = document.querySelector(".ytp-scrubber-container")
+            const videoHtml = document.querySelector('.html5-video-player')
+
+            if (container && videoHtml) {
+
+                const containerX = container.getBoundingClientRect().x
+                const videohtmlX = videoHtml.offsetWidth
+
+                return containerX / videohtmlX * 100
+            }
+
+            return 0
+        }
+
+        const removeMark = (id) => {
+
+            player.removeChild(`#${id}`)
+
+            const bottomLastItemRemoved = Number(backgroundMark.style.bottom.replace('px', ''))
+            document.querySelectorAll('.mark_item').forEach(item => {
+                console.log(item.style.bottom)
+
+                const isMarkItemDown = item.style.classList.contains('is_mark_item_down')
+                const newBottomValue = Number(item.style.bottom.replace('px', ''))
+                if (newBottomValue > bottomLastItemRemoved && !isMarkItemDown)
+                    item.style.bottom = `${newBottomValue - 22}px`
+            })
+        }
+
+        const addNewMark = (id, description, bottomSpace, leftSpace) => {
+
+            const backgroundMark = document.createElement('div')
+            backgroundMark.id = id;
+            backgroundMark.classList.add('mark_item')
+            backgroundMark.textContent = description
+            backgroundMark.style = `                      
+                bottom: ${bottomSpace};
+                left: ${leftSpace}%;
+            `
+            backgroundMark.addEventListener('click', () => removeMark(id))
+            player.appendChild(backgroundMark)
+        }
+
+        const getPositionMarkBottom = () => {
+
+            const elLastItemMarked = document.querySelector(`#${lastItemMarked}`)
+            const pinTimerVideo = document.querySelector("#movie_player .ytp-scrubber-container")
+
+            if (elLastItemMarked && pinTimerVideo) {
+
+                const lastPositionToItemMarker = getOffsetPositions(elLastItemMarked)
+                const poistionPinToPlayer = getOffsetPositions(pinTimerVideo)
+
+                // calculated position from last mark added
+                // and new mark if it is greater than the last position, reset
+                if (poistionPinToPlayer.left >= (lastPositionToItemMarker.left + 4)) {
+                    return BOTTOM_MARK_POSITION
+                }
+                else {
+
+                    const newBottomValue = Number(elLastItemMarked.style.bottom.replace('px', ''))
+                    return `${newBottomValue + BOTTOM_MARK_DISTANC}px`
+                }
             }
             else {
-                console.log("Nada foi encontrado")
+                return BOTTOM_MARK_POSITION
             }
-        })
+
+        }
+
+        createdButtonAddMark()
+            .addEventListener('click', () => {
+
+                const initialPositionMark = calcInitialPositionMarkVideo()
+
+                if (initialPositionMark) {
+
+                    verifyPlayPause('pause')
+                    createPopupToAddMark()
+
+                    document.querySelector('#mark_button_add')
+                        .addEventListener(`click`, () => {
+
+                            const markId = `mark${currentTimeVideo.textContent.replace(':', '_')}`
+                            const markDescription = `${currentTimeVideo.textContent} - ${document.querySelector(`#mark_text`).value}`
+
+                            const positionMarkBottom = lastItemMarked
+                                ? getPositionMarkBottom()
+                                : BOTTOM_MARK_POSITION
+
+                            addNewMark(
+                                markId,
+                                markDescription,
+                                positionMarkBottom,
+                                initialPositionMark
+                            )
+
+                            //** save the last id marked */ 
+                            lastItemMarked = markId
+
+                            //** remove option add itens for screen */
+                            document.querySelector(`#mark_div_background`).remove()
+
+                            verifyPlayPause('play')
+                        })
+
+                    closePopupToAddMark()
+                }
+            })
     }
 
 }, 1000)
