@@ -7,7 +7,7 @@ const interval = setInterval(() => {
     if (isReady) {
         clearInterval(interval)
 
-        const BOTTOM_MARK_POSITION = `56px`
+        const BOTTOM_MARK_POSITION = 56
         const BOTTOM_MARK_DISTANC = 22
 
         let lastItemMarked = null
@@ -92,7 +92,6 @@ const interval = setInterval(() => {
                 buttonControlPlayPause.click()
             else if (type === 'pause' && isPlaying)
                 buttonControlPlayPause.click()
-
         }
 
         const calcInitialPositionMarkVideo = () => {
@@ -126,11 +125,12 @@ const interval = setInterval(() => {
             })
         }
 
-        const addNewMark = (id, description, bottomSpace, leftSpace) => {
+        const addNewMark = (id, description, bottomSpace, leftSpace, nivel) => {
 
             const backgroundMark = document.createElement('div')
             backgroundMark.id = id;
             backgroundMark.classList.add('mark_item')
+            backgroundMark.classList.add(`nivel_${nivel}`)
             backgroundMark.textContent = description
             backgroundMark.style = `                      
                 bottom: ${bottomSpace};
@@ -142,29 +142,33 @@ const interval = setInterval(() => {
 
         const getPositionMarkBottom = () => {
 
-            const elLastItemMarked = document.querySelector(`#${lastItemMarked}`)
             const pinTimerVideo = document.querySelector("#movie_player .ytp-scrubber-container")
+            const poistionPinToPlayer = getOffsetPositions(pinTimerVideo)
+            const listItem = [...document.querySelectorAll('.mark_item')]
 
-            if (elLastItemMarked && pinTimerVideo) {
+            let listItemsIsMarked = 0
+            for (const item of listItem) {
+                const itemPosition = getOffsetPositions(item)
+                const itemNivel = Number(item.classList[1].split('_')[1])
 
-                const lastPositionToItemMarker = getOffsetPositions(elLastItemMarked)
-                const poistionPinToPlayer = getOffsetPositions(pinTimerVideo)
+                if (itemPosition.right > poistionPinToPlayer.left)
+                    listItemsIsMarked += itemNivel === 0 ? 1 : itemNivel
+            }
 
-                // calculated position from last mark added
-                // and new mark if it is greater than the last position, reset
-                if (poistionPinToPlayer.left >= (lastPositionToItemMarker.left + 4)) {
-                    return BOTTOM_MARK_POSITION
-                }
-                else {
-
-                    const newBottomValue = Number(elLastItemMarked.style.bottom.replace('px', ''))
-                    return `${newBottomValue + BOTTOM_MARK_DISTANC}px`
+            // calculated position from last mark added
+            // and new mark if it is greater than the last position, reset
+            if (listItemsIsMarked > 0) {
+                return {
+                    space: `${BOTTOM_MARK_POSITION + (BOTTOM_MARK_DISTANC * listItemsIsMarked)}px`,
+                    nivel: listItemsIsMarked
                 }
             }
             else {
-                return BOTTOM_MARK_POSITION
+                return {
+                    space: `${BOTTOM_MARK_POSITION}px`,
+                    nivel: 0
+                }
             }
-
         }
 
         createdButtonAddMark()
@@ -182,16 +186,18 @@ const interval = setInterval(() => {
 
                             const markId = `mark${currentTimeVideo.textContent.replace(':', '_')}`
                             const markDescription = `${currentTimeVideo.textContent} - ${document.querySelector(`#mark_text`).value}`
+                            const markSpace = getPositionMarkBottom()
 
                             const positionMarkBottom = lastItemMarked
-                                ? getPositionMarkBottom()
-                                : BOTTOM_MARK_POSITION
+                                ? markSpace.space
+                                : `${BOTTOM_MARK_POSITION}px`
 
                             addNewMark(
                                 markId,
                                 markDescription,
                                 positionMarkBottom,
-                                initialPositionMark
+                                initialPositionMark,
+                                markSpace.nivel
                             )
 
                             //** save the last id marked */ 
